@@ -4,6 +4,7 @@ import type {
 } from '../utils/initialData';
 import type { AIRiskAlert } from '../utils/aiEngine';
 import { generateRiskAlerts } from '../utils/aiEngine';
+import { API_URL } from '../config';
 
 export interface SystemNotification {
   id: string;
@@ -99,7 +100,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   bootstrap: async () => {
     set({ isLoading: true });
     try {
-      const res = await fetch('/api/bootstrap');
+      const res = await fetch(API_URL + '/api/bootstrap');
       if (!res.ok) throw new Error('Failed to bootstrap');
       const data = await res.json();
       set({
@@ -137,7 +138,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       targetName,
     };
     try {
-      const res = await fetch('/api/logs', {
+      const res = await fetch(API_URL + '/api/logs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newLog),
@@ -158,7 +159,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       progress: 0,
     };
     try {
-      const res = await fetch('/api/projects', {
+      const res = await fetch(API_URL + '/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProject),
@@ -178,7 +179,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!proj) return;
     const updatedProj = { ...proj, ...updates };
     try {
-      const res = await fetch(`/api/projects/${id}`, {
+      const res = await fetch(`${API_URL}/api/projects/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedProj),
@@ -198,7 +199,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   deleteProject: async (id) => {
     const proj = get().projects.find(p => p.id === id);
     try {
-      const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/api/projects/${id}`, { method: 'DELETE' });
       if (res.ok) {
         set(state => ({
           projects: state.projects.filter(p => p.id !== id),
@@ -222,7 +223,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       timeSpent: 0,
     };
     try {
-      const res = await fetch('/api/tasks', {
+      const res = await fetch(API_URL + '/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newTask),
@@ -245,7 +246,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!task) return;
     const updatedTask = { ...task, ...updates };
     try {
-      const res = await fetch(`/api/tasks/${id}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -268,7 +269,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const task = get().tasks.find(t => t.id === id);
     if (!task) return;
     try {
-      const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/api/tasks/${id}`, { method: 'DELETE' });
       if (res.ok) {
         set(state => ({
           tasks: state.tasks.filter(t => t.id !== id)
@@ -287,7 +288,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!task) return;
     const updatedTask = { ...task, status };
     try {
-      const res = await fetch(`/api/tasks/${id}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -314,7 +315,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
           if (!task) return null;
           affectedProjects.add(task.projectId);
           const updatedTask = { ...task, ...updates };
-          const res = await fetch(`/api/tasks/${id}`, {
+          const res = await fetch(`${API_URL}/api/tasks/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedTask),
@@ -360,7 +361,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       comments: [...task.comments, newComment],
     };
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -390,7 +391,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       checklist: [...task.checklist, newItem],
     };
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -415,7 +416,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       checklist: task.checklist.map(c => c.id === itemId ? { ...c, completed: !c.completed } : c)
     };
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -440,7 +441,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       checklist: task.checklist.filter(c => c.id !== itemId)
     };
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -465,7 +466,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       timeSpent: task.timeSpent + hours,
     };
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -496,7 +497,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       attachments: [...task.attachments, newAttachment],
     };
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTask),
@@ -520,7 +521,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       read: false,
     };
     try {
-      const res = await fetch('/api/notifications', {
+      const res = await fetch(API_URL + '/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newNotif),
@@ -536,7 +537,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   markNotificationRead: async (id) => {
     try {
-      const res = await fetch(`/api/notifications/${id}/read`, { method: 'PUT' });
+      const res = await fetch(`${API_URL}/api/notifications/${id}/read`, { method: 'PUT' });
       if (res.ok) {
         const saved = await res.json();
         set(state => ({
@@ -550,7 +551,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   markAllNotificationsRead: async () => {
     try {
-      const res = await fetch('/api/notifications/read-all', { method: 'POST' });
+      const res = await fetch(API_URL + '/api/notifications/read-all', { method: 'POST' });
       if (res.ok) {
         set(state => ({
           notifications: state.notifications.map(n => ({ ...n, read: true }))
@@ -563,7 +564,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   clearNotifications: async () => {
     try {
-      const res = await fetch('/api/notifications', { method: 'DELETE' });
+      const res = await fetch(API_URL + '/api/notifications', { method: 'DELETE' });
       if (res.ok) {
         set({ notifications: [] });
       }
@@ -578,7 +579,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       id: `sprint-${Date.now()}`,
     };
     try {
-      const res = await fetch('/api/sprints', {
+      const res = await fetch(API_URL + '/api/sprints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newSprint),
